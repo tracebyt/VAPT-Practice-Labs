@@ -245,3 +245,69 @@ Sanitize and encode user input before storing to the database
 Escape output on render using HTML encoding
 Apply Content Security Policy (CSP)
 Use frameworks/libraries that auto-escape HTML output
+
+Stored XSS (High) – bWAPP
+
+Vulnerable Application
+
+- **Application:** bWAPP (Buggy Web Application)
+- **Module:** XSS - Stored (Blog)
+- **URL:** `http://<bee-box-ip>/bWAPP/xss_stored_1.php`
+- **Security Level:** High
+
+Objective
+
+To test whether stored XSS is still possible when bWAPP is configured with the highest security setting.
+
+Test Environment
+
+- **Attacker Machine:** Kali Linux
+- **Target Machine:** Bee-box (bWAPP)
+- **Browser:** Firefox
+- **Tools Used:** Manual Testing
+
+Steps to Reproduce
+
+1. **Login to bWAPP**
+   - URL: `http://<bee-box-ip>/bWAPP/`
+   - Username: `bee`
+   - Password: `bug`
+
+2. **Set Security Level to High**
+   - Use dropdown at the top-right: `Set Security Level → High`
+
+3. **Select Vulnerability**
+   - Vulnerability: `XSS - Stored (Blog)`
+   - Click: `Hack`
+
+4. **Submit Payload**
+   - **Title:** `Test Stored XSS - High`
+   - **Message:** Try each of the following payloads:
+     ```html
+     <script>alert(1)</script>
+     <img src=x onerror=alert(1)>
+     <svg/onload=alert(1)>
+     <a href="javascript:alert(1)">XSS</a>
+     <marquee onstart=alert(1)>
+     <details open ontoggle=alert(1)>
+     ```
+
+**Observe Behavior**
+
+   - Entries are stored and displayed
+   - No alert or JavaScript execution occurs
+   - HTML is rendered as plain text or encoded
+
+Result
+
+- The application successfully stored all inputs
+- JavaScript did **not** execute upon reload
+- Confirms that **Stored XSS is mitigated** under High security level
+
+Security Mechanism Observed
+
+- HTML tags are sanitized or escaped
+- Likely usage of functions like `htmlspecialchars()` or `htmlentities()`
+- Prevents execution of user-supplied scripts
+
+
