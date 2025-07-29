@@ -184,3 +184,64 @@ Sanitize user input using functions like htmlspecialchars()
 Encode output before displaying it in HTML
 Use Content Security Policy (CSP)
 Avoid reflecting unsanitized input
+
+Stored XSS (Low) – bWAPP
+
+Vulnerable Application
+
+- **Application:** bWAPP (Buggy Web Application)
+- **Module:** XSS - Stored (Blog)
+- **URL:** `http://<bee-box-ip>/bWAPP/xss_stored_1.php`
+
+Objective
+
+To demonstrate a stored XSS vulnerability where malicious input is permanently stored in the application (in a blog post) and executed whenever any user accesses the affected page.
+
+Test Environment
+
+- **Attacker Machine:** Kali Linux
+- **Target Machine:** Bee-box (bWAPP)
+- **Browser:** Firefox
+- **Tools Used:** Manual Testing
+
+Steps to Reproduce
+
+1. **Login to bWAPP**
+   - URL: `http://<bee-box-ip>/bWAPP/`
+   - Username: `bee`
+   - Password: `bug`
+
+2. **Select Module**
+   - Vulnerability: `XSS - Stored (Blog)`
+   - Click: `Hack`
+
+3. **Submit Payload**
+   - **Title:** `My XSS Test`
+   - **Message:**
+     ```html
+     <script>alert('StoredXSS')</script>
+     ```
+   - Click: `Submit your blog entry`
+
+4. **Check Result**
+   - Alert box appears immediately
+   - Refresh the page — the alert appears again
+   - Confirms that the script was **stored and re-executed**
+
+Payload Used
+
+```html
+<script>alert('StoredXSS')</script>
+
+Result
+
+JavaScript payload is stored in the blog post content.
+Triggered every time the affected blog post is viewed.
+Confirms a Stored XSS vulnerability.
+
+Mitigation
+
+Sanitize and encode user input before storing to the database
+Escape output on render using HTML encoding
+Apply Content Security Policy (CSP)
+Use frameworks/libraries that auto-escape HTML output
