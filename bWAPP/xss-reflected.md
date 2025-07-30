@@ -310,4 +310,73 @@ Security Mechanism Observed
 - Likely usage of functions like `htmlspecialchars()` or `htmlentities()`
 - Prevents execution of user-supplied scripts
 
+Stored XSS (High) – bWAPP
 
+Vulnerable Application
+Application: bWAPP (Buggy Web Application)
+Module: XSS - Stored (Blog)
+URL: http://<bee-box-ip>/bWAPP/xss_stored_1.php
+Security Level: High
+
+Objective
+
+To test whether stored XSS is possible when bWAPP is configured with the highest security setting.
+
+Test Environment
+
+Attacker Machine: Kali Linux
+Target Machine: Bee-box (bWAPP)
+Browser: Firefox
+Tools Used: Burp Suite (Intercept), Firefox Developer Tools
+
+Steps to Reproduce
+
+1. Login to bWAPP
+	URL: http://<bee-box-ip>/bWAPP/
+	Username: bee
+	Password: bug
+
+2. Set Security Level to High
+	Navigate to: Set Security Level → High
+
+3. Select Vulnerability
+	Vulnerability: XSS - Stored (Blog)
+	Click: Hack
+
+4. Submit Payload
+	The blog page has a single input field (no title field)
+	Submit the following payload via Burp Suite:
+	<svg/onload=alert(1)>
+
+	Intercepted Request:
+
+	POST /bWAPP/xss_stored_1.php HTTP/1.1
+	Host: <bee-box-ip>
+	Content-Type: application/x-www-form-urlencoded
+	Cookie: PHPSESSID=...
+
+	entry=<svg/onload=alert(1)>&entry_add=
+
+5. Check the Output
+
+	Reload the blog page after submission
+	Use Firefox Developer Tools (Inspect → Elements tab) to search the DOM
+
+Observe Behavior
+
+Entry is stored successfully
+Input appears in the DOM as text
+Payload is HTML-escaped and does not execute
+No alert or JavaScript execution triggered
+
+Result
+
+Stored XSS attempt did not succeed
+Payload is reflected but safely encoded
+No popup or malicious behavior observed
+
+Security Mechanism Observed
+
+Application uses output encoding (e.g., htmlspecialchars() or htmlentities())
+Prevents execution of user-supplied scripts
+Likely applies sanitization before rendering the input
